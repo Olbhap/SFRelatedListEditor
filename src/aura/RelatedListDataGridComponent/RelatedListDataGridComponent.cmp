@@ -1,0 +1,82 @@
+<aura:component controller="RelatedListDataGridController"
+                implements="flexipage:availableForRecordHome,force:hasRecordId" 
+                access="global" >
+    <aura:attribute name="recordId" type="Id" /> 
+    <aura:attribute name="relatedListLabel" type="String" access="global"/> 
+    <aura:attribute name="relatedListName" type="String"/> 
+    
+    <aura:attribute name="columns" type="Object[]"/>
+    <aura:attribute name="items" type="Object[]"/>
+    
+    <aura:attribute name="displayMode" type="String" default="read"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler event="force:refreshView" action="{!c.doInit}" />    
+    
+    <article aura:id="gridContainer" class="slds-card hidden">
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media--center slds-has-flexi-truncate">
+                <div class="slds-media__body slds-truncate">
+                    <h2>
+                        <span class="slds-text-heading--small">{!v.relatedListLabel}</span>                        
+                    </h2>
+                </div>
+            </header>
+            <div class="slds-no-flex">
+                <lightning:buttonIcon aura:id="editButton"
+                                      iconName="utility:edit" 
+                                      size="small" variant="bare"
+                                      onclick="{! c.startEdit }" 
+                                      alternativeText="Edit Items" />                
+            </div>
+        </div>
+        <div class="slds-card__body">
+            <table class="slds-table slds-table--bordered slds-no-row-hover slds-table--cell-buffer">
+                <thead>
+                    <tr class="slds-text-title--caps">
+                        <aura:iteration items="{!v.columns}" var="column">
+                            <th scope="col">
+                                <div class="slds-truncate" 
+                                     title="{!column.label}">
+                                    {!column.label}
+                                </div>
+                            </th>
+                        </aura:iteration>                           
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.items}" 
+                                    var="item" 
+                                    indexVar="itemRank">                  
+                        <tr>
+                            <aura:iteration items="{!v.columns}" 
+                                            var="column" 
+                                            indexVar="columnRank">                          
+                                <c:DataGridCellComponent aura:id="cell"
+                                                         item="{!item}" 
+                                                         itemRank="{!itemRank}"
+                                                         column="{!column}" 
+                                                         columnRank="{!columnRank}"
+                                                         displayMode="{!v.displayMode}"/>
+                            </aura:iteration>
+                        </tr>            
+                    </aura:iteration>    	            
+                </tbody>
+            </table>
+        </div>
+        <div aura:id="gridActions" class="forceRecordEditActions hidden">
+            <div class="actionsContainer">
+                <button type="button" 
+                        class="slds-button slds-button--neutral" 
+                        onclick="{! c.cancelEdit }">
+                    Cancel
+                </button>
+                <button type="button" 
+                        class="slds-button slds-button--brand" 
+                        onclick="{! c.saveEdit }">
+                    Save
+                </button>
+            </div>
+        </div>
+    </article>
+</aura:component>

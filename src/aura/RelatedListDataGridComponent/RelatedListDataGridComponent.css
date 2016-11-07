@@ -1,0 +1,15 @@
+.THIS.shadow-effect {
+    box-shadow: 0 2px 4px 4px rgba(0,0,0,.16);
+}
+
+.THIS.hidden{
+    display: none;
+}
+
+.THIS .hidden{
+    display: none;
+}
+
+.THIS .slds-button--brand{
+    margin-left: 1rem !important;
+}
