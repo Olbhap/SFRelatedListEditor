@@ -5,7 +5,7 @@ This app provides all the necessary lightning components to enable inline editin
 ## What is in the box
 
 The app provides lightning components for the client side and a controller to handle metatdata and data manipulation in the backend.
-The controller can handle any type of object (standard and custom as well). To achieve this, I massivelly used the Rest API mainly "sobject" API(s). 
+The controller can handle any type of object (standard and custom as well). To achieve this, I massivelly used the Salesfroce Rest API mainly "sobject" API(s). 
 
 ## Lightning Components
 
