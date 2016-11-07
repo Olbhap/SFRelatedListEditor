@@ -11,11 +11,11 @@ The controller can handle any type of object (standard and custom as well). To a
 
 ### RelatedListDataGridsComponent
 
-This component can be used to display all the related lists. The list of related list is extracted from the object layout.
+Display all the related lists. The list of related list is extracted from the object layout.
 
 ### RelatedListDataGridComponent
 
-This component can be used to display a specific related list based on the label. Using the label is more user friendly. 
+Display a specific related list based on the label. Using the label is more user friendly. 
 The related list label can set from the app lightning builder.
 
 Both components are availables in the lightning app builder. So just drag&drop and enjoy.
