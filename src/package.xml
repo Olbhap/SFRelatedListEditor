@@ -1,5 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>RelatedListEditor</fullName>
-    <version>37.0</version>
+	<fullName>RelatedListEditor</fullName>
+	<types>
+		<members>RelatedListDataGridController</members>
+		<members>RelatedListDataGridControllerTest</members>
+		<members>RestAPIMockHttpResponseGenerator</members>
+		<members>RestAPIUtils</members>
+		<members>RestAPIUtilsTest</members>
+		<name>ApexClass</name>
+	</types>
+	<types>
+		<members>GetSessionIdPage</members>
+		<name>ApexPage</name>
+	</types>
+	<types>
+		<members>DataGridCellComponent</members>
+		<members>RelatedListDataGridComponent</members>
+		<members>RelatedListDataGridsComponent</members>
+		<name>AuraDefinitionBundle</name>
+	</types>
+	<types>
+		<members>TestAccountContactsResponse</members>
+		<members>TestAccountDescribeResponse</members>
+		<members>TestAccountDetailsResponse</members>
+		<members>TestAccountLayoutResponse</members>
+		<name>StaticResource</name>
+	</types>
+	<version>37.0</version>
 </Package>
