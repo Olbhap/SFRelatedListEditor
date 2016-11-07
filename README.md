@@ -17,10 +17,10 @@ The controller can handle any type of object (standard and custom as well). To a
 ### RelatedListDataGridsComponent
 
 Display all the related lists. The list of related list is extracted from the object layout.
-![alt text](https://cloud.githubusercontent.com/assets/7535971/20064243/4b8a0ce0-a50a-11e6-8adb-a7f21a5e819e.PNG "Related Lists in read mode")
+![alt text](https://cloud.githubusercontent.com/assets/7535971/20064242/4b87cb60-a50a-11e6-9f93-425d2ab6e065.PNG "Related Lists in read mode")
 
 Then we switch to the edition mode:
-![alt text](https://cloud.githubusercontent.com/assets/7535971/20061301/a27dc6c8-a4ff-11e6-96ba-e2698f5474a1.PNG "Related Lists in write mode")
+![alt text](https://cloud.githubusercontent.com/assets/7535971/20064243/4b8a0ce0-a50a-11e6-8adb-a7f21a5e819e.PNG "Related Lists in write mode")
 
 ### RelatedListDataGridComponent
 
