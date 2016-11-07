@@ -20,4 +20,8 @@ The related list label can set from the app lightning builder.
 
 Both components are availables in the lightning app builder. So just drag&drop and enjoy.
 
+##Testing
+
+The package contains Unit Tests for Apex classes and Static Resources for Rest MockUp.
+
 
