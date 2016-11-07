@@ -1,3 +1,8 @@
+<a href="https://githubsfdeploy.herokuapp.com?owner=hicham-elmansouri/&repo=SFRelatedListEditor">
+  <img alt="Deploy to Salesforce"
+       src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/src/main/webapp/resources/img/deploy.png">
+</a>
+
 ## Overview
 
 This app provides all the necessary lightning components to enable inline editing for related list.
