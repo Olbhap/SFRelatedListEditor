@@ -3,7 +3,7 @@
         //If the component is initialized 
         //From the related lists component
         //We have just to load items
-        if(component.get("v.columns")){
+        if(component.get("v.columns") && component.get("v.columns").length > 0){
             helper.loadItems(component);                      
         }
         //Otherwise we have to load 
