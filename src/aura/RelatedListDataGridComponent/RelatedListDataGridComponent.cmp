@@ -1,8 +1,8 @@
-<aura:component controller="RelatedListDataGridController"
-                implements="flexipage:availableForRecordHome,force:hasRecordId" 
-                access="global" >
-    <aura:attribute name="recordId" type="Id" /> 
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" 
+                controller="RelatedListDataGridController"
+                access="global" >   
     <aura:attribute name="relatedListLabel" type="String" access="global"/> 
+    <aura:attribute name="relatedObjectName" type="String" default=""/> 
     <aura:attribute name="relatedListName" type="String"/> 
     
     <aura:attribute name="columns" type="Object[]"/>
@@ -25,9 +25,14 @@
             <div class="slds-no-flex">
                 <lightning:buttonIcon aura:id="editButton"
                                       iconName="utility:edit" 
-                                      size="small" variant="bare"
+                                      size="medium" variant="bare"
                                       onclick="{! c.startEdit }" 
-                                      alternativeText="Edit Items" />                
+                                      alternativeText="Edit Items" />
+                <lightning:buttonIcon aura:id="createButton"
+                                      iconName="utility:new" 
+                                      size="medium" variant="bare"
+                                      onclick="{! c.createItem }" 
+                                      alternativeText="Create New Record" />                
             </div>
         </div>
         <div class="slds-card__body">

@@ -1,5 +1,5 @@
 @isTest
-public class RestAPIUtilsTest {      
+public class RestAPIUtilsTest {          
     static testMethod void testGetRelatedListsMetadata(){
         Test.startTest();        
         Test.setMock(HttpCalloutMock.class, new RestAPIMockHttpResponseGenerator());        

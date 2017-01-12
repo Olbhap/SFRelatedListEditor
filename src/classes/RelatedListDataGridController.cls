@@ -72,7 +72,7 @@ public with sharing class RelatedListDataGridController {
         }           
         
         return null;
-    }
+    }        
     
     /**
      * Return the the related list items

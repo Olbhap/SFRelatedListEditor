@@ -3,10 +3,10 @@
         //If the component is initialized 
         //From the related lists component
         //We have just to load items
-	//Check the length of the column array
-        if(component.get("v.columns") && component.get("v.columns").length > 0){
+        if(component.get("v.relatedObjectName")!=""){
             helper.loadItems(component);                      
         }
+        
         //Otherwise we have to load 
         //the metadata as well
         else{
@@ -18,8 +18,9 @@
             });
             
             metadataAction.setCallback(this, function(res) {            
-                if (res.getState() === "SUCCESS") { 
+                if (res.getState() === "SUCCESS") {        
                     component.set("v.relatedListName", res.getReturnValue().name);
+                    component.set("v.relatedObjectName",  res.getReturnValue().sobject);
                     component.set("v.columns", res.getReturnValue().columns);
                     
                     helper.loadItems(component);                      
@@ -63,5 +64,13 @@
         
         //Save items in the backend
         helper.saveItems(component, items, saveCallback);
+    },
+    createItem : function(component, event, helper){
+        var createRecordEvent = $A.get("e.force:createRecord");
+        createRecordEvent.setParams({
+            "entityApiName": component.get("v.relatedObjectName")
+        });
+        
+        createRecordEvent.fire();
     }
 })

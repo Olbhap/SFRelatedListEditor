@@ -2,11 +2,11 @@
 public class RelatedListDataGridControllerTest {
  	static testMethod void testGetReleatedListsMetadata()
     {
-	Test.startTest();        
+		Test.startTest();        
         Test.setMock(HttpCalloutMock.class, new RestAPIMockHttpResponseGenerator());        
                 
         Object[] relatedListsMatadata = RelatedListDataGridController.getReleatedListsMetadata('0010Y000003iFovQAE');
-	System.assertEquals(7, relatedListsMatadata.size());        
+		System.assertEquals(7, relatedListsMatadata.size());        
         
         Test.stopTest();        
     }
@@ -19,7 +19,7 @@ public class RelatedListDataGridControllerTest {
                 
         Object relatedListsMatadata = RelatedListDataGridController.getReleatedListMetadata('0010Y000003iFovQAE',
                                                                                             'Contacts');
-	System.assertEquals(true, relatedListsMatadata != null);        
+		System.assertEquals(true, relatedListsMatadata != null);        
         
         Test.stopTest();         
     }
@@ -31,7 +31,7 @@ public class RelatedListDataGridControllerTest {
         
         Object[] contacts = RelatedListDataGridController.getReleatedListItems('0010Y000003iFovQAE', 
                                                                                'Contacts');        
-	System.assertEquals(1, contacts.size());                
+		System.assertEquals(1, contacts.size());                
         
         Test.stopTest();
     } 
@@ -44,7 +44,7 @@ public class RelatedListDataGridControllerTest {
         
         Object[] contacts = RelatedListDataGridController.getReleatedListItems('0010Y000003iFovQAE', 
                                                                                'Contacts');                
-	Account account = new Account();
+		Account account = new Account();
         account.Name='Test Account' ;
         insert account;
 
@@ -59,7 +59,7 @@ public class RelatedListDataGridControllerTest {
         mContact.put('Id', contact.Id);        
         mContact.remove('OwnerId');
         
-	Boolean result = RelatedListDataGridController.saveRelatedListItems(System.JSON.serialize(contacts));
+		Boolean result = RelatedListDataGridController.saveRelatedListItems(System.JSON.serialize(contacts));
         System.assertEquals(true, result);
         Test.stopTest();        
     }

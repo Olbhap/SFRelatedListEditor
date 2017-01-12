@@ -1,13 +1,14 @@
-<aura:component controller="RelatedListDataGridController"
-                implements="flexipage:availableForRecordHome,force:hasRecordId" access="global">
-	<aura:attribute name="recordId" type="Id" /> 
-    <aura:attribute name="relatedLists" type="Object[]"/>
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" 
+                controller="RelatedListDataGridController"                
+                access="global">
+	<aura:attribute name="relatedLists" type="Object[]"/>
     
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
     <aura:handler event="force:refreshView" action="{!c.doInit}" />    
     
     <aura:iteration items="{!v.relatedLists}" var="relatedList">
     	<c:RelatedListDataGridComponent recordId="{!v.recordId}"
+										relatedObjectName="{!relatedList.sobject}"                                        
                                         relatedListLabel="{!relatedList.label}"
                                         relatedListName="{!relatedList.name}"
                                         columns="{!relatedList.columns}"/>
