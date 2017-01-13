@@ -1,20 +1,5 @@
 ({
     doInit : function(component, event) {
-        //A helper function to get 
-        //the value as string for outputText
-        function stringValue(value){
-            if(typeof(value)=="boolean"){
-                return value.toString();
-            }
-            else{
-                if(value){
-                    return value.toString();
-                }
-            }
-            
-            return null;
-        }
-        
         //A helper function to set the aura component
         //in the current cell or raise error
         function setCellComponent(cellComponent, status, errorMessage){            
@@ -73,6 +58,7 @@
                 inputParams : {
                     "aura:id": "inputDateCell",
                     "value" : component.getReference("v.value"),
+                    "format" : "dd/MM/yyyy",
                     "displayDatePicker" : true
                 }
             },
@@ -80,15 +66,16 @@
                 inputType : "ui:inputDateTime",
                 inputParams : {
                     "aura:id": "ui:inputDateTimeCell",
-                    "value" : component.getReference("v.value")
+                    "value" : component.getReference("v.value"),
+                    "format" : "dd/MM/yyyy hh:mm",
+                    "displayDatePicker" : true
                 } 
             },
             "Double":{
                 inputType : "ui:inputNumber",
                 inputParams : {
                     "aura:id" : "inputNumberCell",                    
-                    "value" : component.getReference("v.value"),
-                    "format" : "#,##0,000.00#"
+                    "value" : component.getReference("v.value")                    
                 }  
             },
             "Email":{
@@ -102,16 +89,14 @@
                 inputType : "ui:inputNumber",
                 inputParams : {
                     "aura:id": "inputIntegerCell",
-                    "value" : component.getReference("v.value"),
-                    "format" : "#,##0,000#"
+                    "value" : component.getReference("v.value")                    
                 }
             },
             "Percent":{
                 inputType : "ui:inputNumber",
                 inputParams : {
                     "aura:id" : "inputNumberCell",
-                    "value" : component.getReference("v.value"),
-                    "format" : "#,##0,000.00#",
+                    "value" : component.getReference("v.value")                    
                 }
             },
             "PickList":{
@@ -129,7 +114,7 @@
                 }
             },
             "Url":{
-                inputType : "ui:inputURL ",
+                inputType : "ui:inputURL",
                 inputParams : {
                     "aura:id": "urlCell",
                     "value" : component.getReference("v.value")
@@ -139,25 +124,136 @@
                 inputType : "ui:outputText",
                 inputParams : {
                     "aura:id": "referenceCell",
-                    "value": stringValue(item[column.name])
+                    "value": component.getReference("v.value")
                 } 
             },
             "Formula":{
-                inputType : "ui:outputText",
+                inputType : "ui:outputRichText",
                 inputParams : {
                     "aura:id": "formulaCell",
-                    "value": stringValue(item[column.name])
+                    "value": component.getReference("v.value")
                 } 
             }
         };                
-        
+        var outputConfig = {
+            "String" : {
+                inputType : "ui:outputText",
+                inputParams : {
+                    "aura:id" : "outputTextCell",
+                    "value" : component.getReference("v.value")
+                }
+            },
+            "TextArea" : {
+                inputType : "ui:outputText",
+                inputParams : {
+                    "aura:id" : "textAreaCell",
+                    "value" : component.getReference("v.value")
+                }
+            },
+            "Boolean" :{
+                inputType : "ui:outputCheckbox",
+                inputParams : {
+                    "aura:id" : "outputCheckboxCell",
+                    "value" : component.getReference("v.value")
+                }
+            },
+            "Currency":{
+                inputType : "ui:outputCurrency",
+                inputParams : {
+                    "aura:id": "outputCurrencyCell",
+                    "value" : component.getReference("v.value")
+                }
+            },
+            "Date":{
+                inputType : "ui:outputDate",
+                inputParams : {
+                    "aura:id": "outputDateCell",
+                    "value" : component.getReference("v.value"),
+                    "format" : "dd/MM/yyyy",
+                    "displayDatePicker" : true
+                }
+            },
+            "Datetime":{
+                inputType : "ui:outputDateTime",
+                inputParams : {
+                    "aura:id": "ui:outputDateTimeCell",
+                    "value" : component.getReference("v.value"),
+                    "format" : "dd/MM/yyyy hh:mm",
+                    "displayDatePicker" : true
+                } 
+            },
+            "Double":{
+                inputType : "ui:outputNumber",
+                inputParams : {
+                    "aura:id" : "outputNumberCell",                    
+                    "value" : component.getReference("v.value")                    
+                }  
+            },
+            "Email":{
+                inputType : "ui:outputEmail",
+                inputParams : {
+                    "aura:id": "outputEmailCell",
+                    "value" : component.getReference("v.value")
+                }
+            },
+            "Integer":{
+                inputType : "ui:outputNumber",
+                inputParams : {
+                    "aura:id": "outputIntegerCell",
+                    "value" : component.getReference("v.value")                    
+                }
+            },
+            "Percent":{
+                inputType : "ui:outputNumber",
+                inputParams : {
+                    "aura:id" : "outputNumberCell",
+                    "value" : component.getReference("v.value")                    
+                }
+            },
+            "PickList":{
+                inputType : "ui:outputText",
+                inputParams : {
+                    "aura:id": "pickListCell",
+                    "value" : component.getReference("v.value")
+                } 
+            },
+            "Phone":{
+                inputType : "ui:outputPhone",
+                inputParams : {
+                    "aura:id": "outputPhoneCell",
+                    "value" : component.getReference("v.value")
+                }
+            },
+            "Url":{
+                inputType : "ui:outputURL",
+                inputParams : {
+                    "aura:id": "urlCell",
+                    "value" : component.getReference("v.value"),
+                    "label" : component.getReference("v.value")
+                } 
+            },
+            "Reference":{
+                inputType : "ui:outputText",
+                inputParams : {
+                    "aura:id": "referenceCell",
+                    "value": component.getReference("v.value")
+                } 
+            },
+            "Formula":{
+                inputType : "ui:outputRichText",
+                inputParams : {
+                    "aura:id": "formulaCell",
+                    "value": component.getReference("v.value")
+                } 
+            }
+        };
         if(displayMode=="read"){
             if(component.get("v.columnRank")==0){
                 $A.createComponent(
                     "ui:outputURL",
                     {
                         "aura:id": "outputUrlCell",
-                        "label": stringValue(item[column.name]),
+                        "label": component.getReference("v.value"),
                         "value": "/one/one.app#/sObject/" + item.Id + "/view"
                     },
                     setCellComponent
@@ -165,13 +261,10 @@
             }
             else{
                 $A.createComponent(
-                    "ui:outputText",
-                    {
-                        "aura:id": "outputTextCell",
-                        "value": stringValue(item[column.name])
-                    },
-                    setCellComponent
-                );                                    
+                	outputConfig[column.type].inputType,
+                	outputConfig[column.type].inputParams,
+                	setCellComponent
+            	);                                     
             }
         }else{
             $A.createComponent(

@@ -10,27 +10,29 @@
         //Otherwise we have to load 
         //the metadata as well
         else{
-            var metadataAction = component.get("c.getReleatedListMetadata");
-            
-            metadataAction.setParams({
-                "objectId": component.get("v.recordId"),
-                "relatedListLabel": component.get("v.relatedListLabel")
-            });
-            
-            metadataAction.setCallback(this, function(res) {            
-                if (res.getState() === "SUCCESS") {        
-                    component.set("v.relatedListName", res.getReturnValue().name);
-                    component.set("v.relatedObjectName",  res.getReturnValue().sobject);
-                    component.set("v.columns", res.getReturnValue().columns);
-                    
-                    helper.loadItems(component);                      
-                } 
-                else if (res.getState() === "ERROR") {
-                    $A.log("Errors", res.getError());
-                }           
-            });  
-            
-            $A.enqueueAction(metadataAction);               
+            if(component.get("v.relatedListLabel")){
+                var metadataAction = component.get("c.getReleatedListMetadata");
+                
+                metadataAction.setParams({
+                    "objectId": component.get("v.recordId"),
+                    "relatedListLabel": component.get("v.relatedListLabel")
+                });
+                
+                metadataAction.setCallback(this, function(res) {            
+                    if (res.getState() === "SUCCESS" && res.getReturnValue()) {        
+                        component.set("v.relatedListName", res.getReturnValue().name);
+                        component.set("v.relatedObjectName",  res.getReturnValue().sobject);
+                        component.set("v.columns", res.getReturnValue().columns);
+                        
+                        helper.loadItems(component);                      
+                    } 
+                    else if (res.getState() === "ERROR") {
+                        $A.log("Errors", res.getError());
+                    }           
+                });  
+                
+                $A.enqueueAction(metadataAction);             
+            }
         }
     },    
     startEdit : function(component, event, helper) {    
