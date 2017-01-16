@@ -38,8 +38,20 @@ public with sharing class RelatedListDataGridController {
         
         for(Integer i=0; i<columns.size(); i++){
             Map<String, Object> mColumn = (Map<String, Object>) columns.get(i);
-            Schema.SObjectField sfield = relatedObjDesc.fields.getMap().get((String)mColumn.get('name'));
+            String columnKey = (String)mColumn.get('name');
             
+            //If it's a Picklist field
+            if(columnKey.startsWith('toLabel(')){
+                columnKey = columnKey.substringBetween('toLabel(', ')');
+                mColumn.put('name', columnKey);
+            }
+            //If it's a Reference field
+            if(columnKey.endsWith('.Name')){
+                columnKey = (String)mColumn.get('lookupId');
+                mColumn.put('name', columnKey);
+            }
+            
+            Schema.SObjectField sfield = relatedObjDesc.fields.getMap().get(columnKey);           
             if(sfield != null){
                 DescribeFieldResult fieldDescResult = sfield.getDescribe(); 
                 
@@ -47,7 +59,8 @@ public with sharing class RelatedListDataGridController {
                     mColumn.put('type', typesMap.get(fieldDescResult.getType()));                    
                     if(fieldDescResult.isAutoNumber() || fieldDescResult.isCalculated()){
                         mColumn.put('type', 'Formula');                    
-                    }                     
+                    }  
+                    
                 }else{
                     columns.remove(i);
                 }                            
@@ -102,34 +115,80 @@ public with sharing class RelatedListDataGridController {
     @AuraEnabled
     public static Object[] getReleatedListItems(Id objectId, 
                                                 String relatedlistName)
-    {
-        List<String> notAccessibleFields = new List<String>();
-        DescribeSObjectResult objectDescResult = objectId.getSobjectType().getDescribe();
+    {            
+        Object[] items = RestAPIUtils.getRelatedListItems(objectId, 
+                                                              relatedlistName);
+        if(items.size()>0){
+            List<String> notAccessibleFields = new List<String>();
+        	Map<String, DescribeFieldResult> lookupFields = new Map<String,DescribeFieldResult>();
+        	Map<String, DescribeFieldResult> picklistFields = new Map<String,DescribeFieldResult>();
         
-        if(objectDescResult != null){
-            //Build the list of not accessible fields
+            Id firstChildId = (Id)((Map<String, Object>) items.get(0)).get('Id');            
+        	DescribeSObjectResult objectDescResult = firstChildId.getSobjectType().getDescribe();
+            
             for(Schema.SObjectField sfield : objectDescResult.fields.getMap().Values()){ 
                 DescribeFieldResult fieldDescResult = sfield.getDescribe();
+                //Build the list of not accessible fields
                 if(!fieldDescResult.isAccessible()){
                     notAccessibleFields.add(fieldDescResult.getName());
+                }                
+                else{
+                    //Build the list of lookup fields            
+                 	if(fieldDescResult.getType()==Schema.DisplayType.REFERENCE){                        
+                    	lookupFields.put(fieldDescResult.getName(), fieldDescResult);
+                	}
+                    //Build the list of picklist fields            
+                    if(fieldDescResult.getType()==Schema.DisplayType.PICKLIST){
+                    	picklistFields.put(fieldDescResult.getName(), fieldDescResult);
+                	}
                 }
             }   
-            
-            Object[] items = RestAPIUtils.getRelatedListItems(objectId, 
-                                                              relatedlistName);
-            //Clean the list of items
-            //Based on the field accessibility
+
             for(Object item : items){
                 Map<String, Object> mItem = (Map<String, Object>) item;
+                //Clean the list based on the field accessibility
                 for(String field : notAccessibleFields){
                     mItem.remove(field);
                 }
+                
+                //Set the lookup labels based on the field type
+                for(String fieldKey : lookupFields.keySet()){
+                    if(mItem.containsKey(fieldKey)){
+                        Id lookupId = (Id)mItem.get(fieldKey);
+                        if(lookupId != null){
+                            SObject lookupObj = getLookupObject(lookupId);
+                            mItem.put(fieldKey + '__Name', lookupObj.get('Name'));                                                        
+                        }                        
+                    }
+                }
+                
+                //Set the picklist options based on the field type
+                for(String fieldKey : picklistFields.keySet()){
+                    if(mItem.containsKey(fieldKey)){
+                        DescribeFieldResult fieldDesc = picklistFields.get(fieldKey);
+                        mItem.put(fieldKey + '__options', JSON.serialize(fieldDesc.getPicklistValues()));                        
+                    }
+                }
             }
-            return items;    
+            
+            return items;                    
         }
-        
+                
         return null;
     } 
+    
+    /**
+     * Return the object based on the lookup id
+     * */
+    private static SObject getLookupObject(Id lookupId)
+    {
+        Schema.SObjectType sobjectType = lookupId.getSObjectType();
+		String sobjectName = sobjectType.getDescribe().getName();
+        
+		return Database.query('Select Id, Name From ' + 
+                              sobjectName + 
+                              ' Where Id = :lookupId');
+    }
     
     /**
     * Save the related list items
