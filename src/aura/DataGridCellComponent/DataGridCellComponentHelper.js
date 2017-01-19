@@ -60,10 +60,15 @@
         }
         //Check Date
         if (column.type == "Date") {
-            if (value && !moment(value, "dd/MM/yyyy").isValid()) {
-                component.set("v.errors", [{
-                    message: "Invalid date: " + value
-                }]);
+            if (value){
+                try{
+                    $A.localizationService.formatDate(value, "dd/MM/yyyy");
+                }
+                catch (e) {
+                    component.set("v.errors", [{
+                        message: "Invalid date: " + value
+                    }]);
+                }
             }
         }
     },    
