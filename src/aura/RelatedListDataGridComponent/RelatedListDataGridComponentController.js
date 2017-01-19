@@ -35,7 +35,10 @@
             }
         }
     },    
-    startEdit : function(component, event, helper) {    
+    startEdit : function(component, event, helper) {
+        //Save a copy of items
+        component.set("v.oldItems", JSON.parse(JSON.stringify(component.get("v.items"))));
+        
         //Refresh the items
         helper.refreshItems(component, component.get("v.items"), "write");               
         
@@ -43,29 +46,65 @@
         helper.refreshUIElements(component, event);
     },
     cancelEdit : function(component, event, helper) {         
-        helper.refreshItems(component, component.get("v.items"), "read");                       
+        helper.refreshItems(component, component.get("v.oldItems"), "read");                       
         helper.refreshUIElements(component, event);        
     },
     saveEdit : function(component, event, helper) {                       
-        //Update the items
-        var items = helper.updateItems(component);
-
-		//OnSave items callback
-        function saveCallback(status, error){
-            if(status=="SUCCESS"){
-                //Refresh the items
-                helper.refreshItems(component, items, "read");      
+        if(helper.checkItems(component)){
+            //Update the items
+            var items = helper.updateItems(component);
             
-                //Refresh the UI elements
-                helper.refreshUIElements(component, event);                    
-            }
-            if(status=="ERROR"){
-            	$A.log("Errors", error);                    
-            }
-        }        
-        
-        //Save items in the backend
-        helper.saveItems(component, items, saveCallback);
+            //OnSave items callback
+            function saveCallback(status, errors){
+                if(status=="SUCCESS"){
+                    //Refresh the items
+                    helper.refreshItems(component, items, "read");      
+                    
+                    //Refresh the UI elements
+                    helper.refreshUIElements(component, event);                    
+                    
+                    //Display a confirmation Taost
+                    var toastEvent = $A.get("e.force:showToast");
+                    toastEvent.setParams({
+                        "title": "Success!",
+                        "type" : "success",
+                        "message": "The items list has been updated successfully"
+                    });
+                    toastEvent.fire();
+                }
+                if(status=="ERROR"){                      
+                    var errMsg = null;
+                    
+                    if(errors[0] && errors[0].message){
+                        errMsg = errors[0].message;
+                    } 
+                    if(errors[0] && errors[0].pageErrors) {
+                        errMsg = errors[0].pageErrors[0].message;
+                    }
+                    
+                    var toastEvent = $A.get("e.force:showToast");
+                    toastEvent.setParams({
+                        "title": "Error!",
+                        "type" : "error",
+                        "mode" : "sticky",
+                        "message": "Server Error:" + errMsg
+                    });
+                    toastEvent.fire();                    
+                }
+            }        
+            
+            //Save items in the backend
+            helper.saveItems(component, items, saveCallback);
+        }else{
+            var toastEvent = $A.get("e.force:showToast");
+            toastEvent.setParams({
+                "title": "Error!",
+                "type" : "error",
+                "mode" : "sticky",
+                "message": "Save failed. Check your data and try again"
+            });
+            toastEvent.fire();
+        }
     },
     createItem : function(component, event, helper){
         var createRecordEvent = $A.get("e.force:createRecord");

@@ -2,13 +2,147 @@
     <aura:attribute name="item" type="Object"/>
     <aura:attribute name="itemRank" type="Integer"/>
     <aura:attribute name="column" type="Object"/>    
-    <aura:attribute name="columnRank" type="Integer"/>    
-	<aura:attribute name="value" type="Object"/>	
-    <aura:attribute name="label" type="String"/>
+    <aura:attribute name="columnRank" type="Integer"/>
     <aura:attribute name="displayMode" type="String" default="read" />
+    
+    <aura:attribute name="type" type="String"/>
+    <aura:attribute name="value" type="Object"/>	
+    <aura:attribute name="label" type="String"/>
+    <aura:attribute name="required" type="Boolean"/>
+    <aura:attribute name="length" type="Integer"/>
+    <aura:attribute name="options" type="Object[]"/>
+    <aura:attribute name="precision" type="Integer"/>
+    <aura:attribute name="digits" type="Integer"/>
+    <aura:attribute name="refValue" type="String"/>
+    <aura:attribute name="refLabel" type="String"/>
+    <aura:attribute name="hasErrors" type="Boolean"/>
+    <aura:attribute name="errors" type="Object[]"/>
     
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />    
     
-    <td aura:id="cellContainer" data-label="{!v.label}">        
+    <td aura:id="cellContainer" data-label="{!v.label}">         
+        <aura:if isTrue="{!v.displayMode != 'read'}">
+            <aura:if isTrue="{!v.hasErrors}">
+                <div class="slds-form-element" style="position: absolute;top: -10px;">
+                    <div class="slds-form-element__icon slds-align-left" onmouseover="{!c.toggleErrTooltip}" onmouseout="{!c.toggleErrTooltip}">
+                        <button class="slds-button slds-button--icon error-button" aria-describedby="tooltip" title="Help" >
+                            <lightning:icon iconName="utility:warning" size="x-small" alternativeText="Help"/>
+                            <span class="slds-assistive-text">Help</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="slds-popover slds-popover--tooltip slds-theme--error slds-nubbin--bottom-left tooltip-toggle" 
+                     role="tooltip" aura:id="tooltip" style="position:absolute;top:-30px;left:20px">
+                    <div class="slds-popover__body">
+                        <ul>
+                            <aura:iteration items="{!v.errors}" var="error">
+                             <li>{!error.message}</li>   
+                            </aura:iteration>
+                        </ul>
+                    </div>
+                </div>
+            </aura:if>
+            <aura:if isTrue="{!v.required}">
+                <span class="required">*</span>
+            </aura:if>
+            <aura:if isTrue="{!v.type == 'Boolean'}">
+                <ui:inputCheckbox aura:id="inputCheckboxCell" value="{!v.value}"/>
+            </aura:if>
+            <aura:if isTrue="{!v.type == 'String'}">              
+                <ui:inputText aura:id="inputCell" value="{!v.value}" required="{!v.required}" maxlength="{!v.length}" change="{!c.checkInput}"/>
+            </aura:if>
+            <aura:if isTrue="{!v.type == 'TextArea'}">
+                <ui:inputText aura:id="inputCell" value="{!v.value}" required="{!v.required}" maxlength="{!v.length}" change="{!c.checkInput}"/>
+            </aura:if>
+            <aura:if isTrue="{!v.type == 'Phone'}">
+                <ui:inputPhone aura:id="inputCell" value="{!v.value}" required="{!v.required}" maxlength="{!v.length}" change="{!c.checkInput}"/>
+            </aura:if>
+            <aura:if isTrue="{!v.type == 'Email'}">
+                <ui:inputEmail aura:id="inputCell" value="{!v.value}" required="{!v.required}" maxlength="{!v.length}" change="{!c.checkInput}"/>        
+            </aura:if>         
+            <aura:if isTrue="{!v.type == 'Url'}">
+                <ui:inputURL aura:id="inputCell" value="{!v.value}" required="{!v.required}" maxlength="{!v.length}" change="{!c.checkInput}"/>           
+            </aura:if>
+            <aura:if isTrue="{!v.type == 'Currency'}">
+                <ui:inputCurrency aura:id="inputCell" value="{!v.value}" required="{!v.required}" change="{!c.checkInput}"/>
+            </aura:if> 
+            <aura:if isTrue="{!v.type == 'Double'}">
+                <ui:inputNumber aura:id="inputCell" value="{!v.value}" required="{!v.required}" change="{!c.checkInput}"/>
+            </aura:if> 
+            <aura:if isTrue="{!v.type == 'Integer'}">
+                <ui:inputNumber aura:id="inputCell" value="{!v.value}" required="{!v.required}" change="{!c.checkInput}"/>        
+            </aura:if>
+            <aura:if isTrue="{!v.type == 'Percent'}">
+                <ui:inputNumber aura:id="inputCell" value="{!v.value}" required="{!v.required}" change="{!c.checkInput}"/>        
+            </aura:if>
+            <aura:if isTrue="{!v.type == 'Date'}">
+                <ui:inputDate aura:id="inputCell" value="{!v.value}" required="{!v.required}" format="dd/MM/yyyy" displayDatePicker="true" change="{!c.checkInput}"/>
+            </aura:if>
+            <aura:if isTrue="{!v.type == 'Datetime'}">
+                <ui:inputDateTime aura:id="inputCell" value="{!v.value}" required="{!v.required}" format="dd/MM/yyyy hh:mm" displayDatePicker="true" change="{!c.checkInput}"/>        	
+            </aura:if>
+            <aura:if isTrue="{!v.type == 'PickList'}">
+                <ui:inputSelect aura:id="inputCell" value="{!v.value}" required="{!v.required}"  options="{!v.options}" change="{!c.checkInput}"/>                       
+            </aura:if>
+            <aura:if isTrue="{!v.type == 'Reference'}">
+                <ui:outputURL aura:id="inputCell" value="{!v.refValue}" label="{!v.refLabel}"/>        
+            </aura:if>
+            <aura:if isTrue="{!v.type == 'ItemLink'}">
+                <ui:outputURL aura:id="inputCell" value="{!v.refValue}" label="{!v.refLabel}"/>        
+            </aura:if>
+            <aura:if isTrue="{!v.type == 'Formula'}">
+                <ui:outputRichText aura:id="inputCell" value="{!v.value}"/> 
+            </aura:if> 
+        </aura:if>
+        <aura:if isTrue="{!v.displayMode == 'read'}">
+            <aura:if isTrue="{!v.type == 'Boolean'}">
+                <ui:outputCheckbox aura:id="outputCheckboxCell" value="{!v.value}"/>
+            </aura:if>
+            <aura:if isTrue="{!v.type == 'String'}">              
+                <ui:outputText aura:id="outputCell" value="{!v.value}"/>
+            </aura:if>
+            <aura:if isTrue="{!v.type == 'TextArea'}">
+                <ui:outputText aura:id="outputCell" value="{!v.value}"/>
+            </aura:if>
+            <aura:if isTrue="{!v.type == 'Phone'}">
+                <ui:outputPhone aura:id="outputCell" value="{!v.value}"/>
+            </aura:if>
+            <aura:if isTrue="{!v.type == 'Email'}">
+                <ui:outputEmail aura:id="outputCell" value="{!v.value}"/>        
+            </aura:if>         
+            <aura:if isTrue="{!v.type == 'Url'}">
+                <ui:outputURL aura:id="outputCell" value="{!v.value}"/>           
+            </aura:if>
+            <aura:if isTrue="{!v.type == 'Currency'}">
+                <ui:outputCurrency aura:id="outputCell" value="{!v.value}"/>
+            </aura:if> 
+            <aura:if isTrue="{!v.type == 'Double'}">
+                <ui:outputNumber aura:id="outputCell" value="{!v.value}"/>
+            </aura:if> 
+            <aura:if isTrue="{!v.type == 'Integer'}">
+                <ui:outputNumber aura:id="outputCell" value="{!v.value}"/>        
+            </aura:if>
+            <aura:if isTrue="{!v.type == 'Percent'}">
+                <ui:outputNumber aura:id="outputCell" value="{!v.value}"/>        
+            </aura:if>
+            <aura:if isTrue="{!v.type == 'Date'}">
+                <ui:outputDate aura:id="outputCell" value="{!v.value}" format="dd/MM/yyyy"/>
+            </aura:if>
+            <aura:if isTrue="{!v.type == 'Datetime'}">
+                <ui:outputDateTime aura:id="outputCell" value="{!v.value}" format="dd/MM/yyyy hh:mm"/>        	
+            </aura:if>
+            <aura:if isTrue="{!v.type == 'PickList'}">
+                <ui:outputText aura:id="outputCell" value="{!v.value}"/>                       
+            </aura:if>
+            <aura:if isTrue="{!v.type == 'Reference'}">
+                <ui:outputURL aura:id="outputCell" value="{!v.refValue}" label="{!v.refLabel}"/>        
+            </aura:if>
+            <aura:if isTrue="{!v.type == 'ItemLink'}">
+                <ui:outputURL aura:id="outputCell" value="{!v.refValue}" label="{!v.refLabel}"/>        
+            </aura:if>
+            <aura:if isTrue="{!v.type == 'Formula'}">
+                <ui:outputRichText aura:id="outputCell" value="{!v.value}"/> 
+            </aura:if> 
+        </aura:if>
     </td> 
 </aura:component>

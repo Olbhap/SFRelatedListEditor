@@ -56,11 +56,26 @@ public with sharing class RelatedListDataGridController {
                 DescribeFieldResult fieldDescResult = sfield.getDescribe(); 
                 
                 if(fieldDescResult.isAccessible()){
+                    //Set requied flag
+                    mColumn.put('required', JSON.serialize(!fieldDescResult.isNillable()));
+                    
+                    //Set precision
+                    mColumn.put('precision', JSON.serialize(fieldDescResult.getPrecision()));
+                    
+                    //Set picklistValues
+                    mColumn.put('options', JSON.serialize(fieldDescResult.getPicklistValues()));
+                    
+                    //Set digits
+                    mColumn.put('digits', JSON.serialize(fieldDescResult.getDigits()));
+                    
+                    //Set length
+                    mColumn.put('length', JSON.serialize(fieldDescResult.getLength()));
+                    
+                    //Set type for AutoNumber and Formula Fields
                     mColumn.put('type', typesMap.get(fieldDescResult.getType()));                    
                     if(fieldDescResult.isAutoNumber() || fieldDescResult.isCalculated()){
                         mColumn.put('type', 'Formula');                    
-                    }  
-                    
+                    }                    
                 }else{
                     columns.remove(i);
                 }                            
@@ -119,37 +134,20 @@ public with sharing class RelatedListDataGridController {
         Object[] items = RestAPIUtils.getRelatedListItems(objectId, 
                                                               relatedlistName);
         if(items.size()>0){
-            List<String> notAccessibleFields = new List<String>();
-        	Map<String, DescribeFieldResult> lookupFields = new Map<String,DescribeFieldResult>();
-        	Map<String, DescribeFieldResult> picklistFields = new Map<String,DescribeFieldResult>();
         
             Id firstChildId = (Id)((Map<String, Object>) items.get(0)).get('Id');            
         	DescribeSObjectResult objectDescResult = firstChildId.getSobjectType().getDescribe();
             
+        	Map<String, DescribeFieldResult> lookupFields = new Map<String,DescribeFieldResult>();            
             for(Schema.SObjectField sfield : objectDescResult.fields.getMap().Values()){ 
-                DescribeFieldResult fieldDescResult = sfield.getDescribe();
-                //Build the list of not accessible fields
-                if(!fieldDescResult.isAccessible()){
-                    notAccessibleFields.add(fieldDescResult.getName());
-                }                
-                else{
-                    //Build the list of lookup fields            
-                 	if(fieldDescResult.getType()==Schema.DisplayType.REFERENCE){                        
-                    	lookupFields.put(fieldDescResult.getName(), fieldDescResult);
-                	}
-                    //Build the list of picklist fields            
-                    if(fieldDescResult.getType()==Schema.DisplayType.PICKLIST){
-                    	picklistFields.put(fieldDescResult.getName(), fieldDescResult);
-                	}
-                }
+                DescribeFieldResult fieldDescResult = sfield.getDescribe();                
+                if(fieldDescResult.getType()==Schema.DisplayType.REFERENCE){                        
+                    lookupFields.put(fieldDescResult.getName(), fieldDescResult);
+                }                                
             }   
 
             for(Object item : items){
                 Map<String, Object> mItem = (Map<String, Object>) item;
-                //Clean the list based on the field accessibility
-                for(String field : notAccessibleFields){
-                    mItem.remove(field);
-                }
                 
                 //Set the lookup labels based on the field type
                 for(String fieldKey : lookupFields.keySet()){
@@ -160,15 +158,7 @@ public with sharing class RelatedListDataGridController {
                             mItem.put(fieldKey + '__Name', lookupObj.get('Name'));                                                        
                         }                        
                     }
-                }
-                
-                //Set the picklist options based on the field type
-                for(String fieldKey : picklistFields.keySet()){
-                    if(mItem.containsKey(fieldKey)){
-                        DescribeFieldResult fieldDesc = picklistFields.get(fieldKey);
-                        mItem.put(fieldKey + '__options', JSON.serialize(fieldDesc.getPicklistValues()));                        
-                    }
-                }
+                }                
             }
             
             return items;                    

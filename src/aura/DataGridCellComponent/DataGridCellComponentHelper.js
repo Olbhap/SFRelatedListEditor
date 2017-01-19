@@ -1,340 +1,100 @@
 ({
-    doInit : function(component, event) {
-        //A helper function to set the aura component
-        //in the current cell or raise error
-        function setCellComponent(cellComponent, status, errorMessage){            
-            if (status === "SUCCESS") {
-                var cellContainer = component.find("cellContainer");
-                cellContainer.set("v.body", [cellComponent]);
-            }
-            if (status === "ERROR") {
-                console.log("Error: " + errorMessage);
-            }
-        }
-                
+    doInit : function(component, event) {         
         var item = component.get("v.item");
         var column = component.get("v.column");
-        var displayMode = component.get("v.displayMode");
         
+        if(component.get("v.columnRank")==0){
+            column.type = 'ItemLink';           
+        }
+        
+        //Set the column type
+        component.set("v.type", column.type); 
         //Set the column label
         component.set("v.label", column.label); 
         //Set the value from the item
-        component.set("v.value", item[column.name]); 
+        component.set("v.value", item[column.name]);                
+        //Set the required flag for all fields
+        component.set("v.required", JSON.parse(column.required));
+        //Set the length for String field
+        component.set("v.length", JSON.parse(column.length));
+        //Set the options for Picklist field
+        component.set("v.options", JSON.parse(column.options));
+        //Set the digits for Integer field
+        component.set("v.digits", JSON.parse(column.digits));
+        //Set the precision for Integer field
+        component.set("v.precision", JSON.parse(column.precision));
         
-        //This object contains the configuration
-        //of diffrent inputs depending on  the type
-        //of the field (String, Date, Url...)
-        var inputConfig = {
-            "String" : {
-                inputType : "ui:inputText",
-                inputParams : function(){
-                    return {
-                    	"aura:id" : "inputTextCell",
-                    	"value" : component.getReference("v.value")
-                    };
-                }
-            },
-            "TextArea" : {
-                inputType : "ui:inputText",
-                inputParams : function(){
-                    return {
-                        "aura:id" : "textAreaCell",
-                        "value" : component.getReference("v.value")
-                    }
-                }
-            },
-            "Boolean" :{
-                inputType : "ui:inputCheckbox",
-                inputParams : function(){
-                    return {
-                        "aura:id" : "inputCheckboxCell",
-                        "value" : component.getReference("v.value")
-                    }
-                }
-            },
-            "Currency":{
-                inputType : "ui:inputCurrency",
-                inputParams : function(){
-                    return {
-                        "aura:id": "inputCurrencyCell",
-                        "value" : component.getReference("v.value")
-                    }
-                }
-            },
-            "Date":{
-                inputType : "ui:inputDate",
-                inputParams : function(){
-                    return {
-                        "aura:id": "inputDateCell",
-                        "value" : component.getReference("v.value"),
-                        "format" : "dd/MM/yyyy",
-                        "displayDatePicker" : true
-                    }
-                }
-            },
-            "Datetime":{
-                inputType : "ui:inputDateTime",
-                inputParams : function(){
-                    return {
-                        "aura:id": "ui:inputDateTimeCell",
-                        "value" : component.getReference("v.value"),
-                        "format" : "dd/MM/yyyy hh:mm",
-                        "displayDatePicker" : true
-                    }
-                } 
-            },
-            "Double":{
-                inputType : "ui:inputNumber",
-                inputParams : function(){
-                    return {
-                        "aura:id" : "inputNumberCell",                    
-                        "value" : component.getReference("v.value")                    
-                    }
-                }  
-            },
-            "Email":{
-                inputType : "ui:inputEmail",
-                inputParams : function(){
-                    return {
-                        "aura:id": "inputEmailCell",
-                        "value" : component.getReference("v.value")
-                    }
-                }
-            },
-            "Integer":{
-                inputType : "ui:inputNumber",
-                inputParams : function(){
-                    return {
-                        "aura:id": "inputIntegerCell",
-                        "value" : component.getReference("v.value")                    
-                    }
-                }
-            },
-            "Percent":{
-                inputType : "ui:inputNumber",
-                inputParams : function(){
-                    return {
-                        "aura:id" : "inputNumberCell",
-                        "value" : component.getReference("v.value")                    
-                    }
-                }
-            },
-            "PickList":{
-                inputType : "ui:inputSelect",
-                inputParams : function(){
-                    return {
-                        "aura:id": "pickListCell",
-                        "value" : component.getReference("v.value"),
-                        "options" : JSON.parse(item[column.name + '__options'])
-                    }
-                } 
-            },
-            "Phone":{
-                inputType : "ui:inputPhone",
-                inputParams : function(){
-                    return {
-                        "aura:id": "inputPhoneCell",
-                        "value" : component.getReference("v.value")
-                    }
-                }
-            },
-            "Url":{
-                inputType : "ui:inputURL",
-                inputParams : function(){
-                    return {
-                        "aura:id": "urlCell",
-                        "value" : component.getReference("v.value")
-                    }
-                } 
-            },
-            "Reference":{
-                inputType : "ui:outputURL",
-                inputParams : function(){
-                    return {
-                        "aura:id": "referenceCell",
-                        "value" : "/one/one.app#/sObject/" + item[column.name] + "/view",
-                        "label": item[column.name + '__Name']
-                    }
-                } 
-            },
-            "Formula":{
-                inputType : "ui:outputRichText",
-                inputParams : function(){
-                    return {
-                        "aura:id": "formulaCell",
-                        "value": component.getReference("v.value")
-                    }
-                } 
+        //Set the refValue/refLabel for Reference Field
+        if(column.type == "Reference"){            
+            component.set("v.refValue", "/one/one.app#/sObject/" + item[column.name] + "/view");
+            component.set("v.refLabel", item[column.name + '__Name']);                                          
+        }
+        
+        //Set the refValue/refLabel for ItemLink Field
+        if(column.type == "ItemLink"){            
+            component.set("v.refValue", "/one/one.app#/sObject/" + item.Id + "/view");
+            component.set("v.refLabel", component.getReference("v.value"));                                          
+        }
+    },    
+    getInputCell : function(component, event){
+        return component.find("inputCell");
+    },   
+    checkRequired : function(cellInput, component, event){
+        if(component.get("v.required") && !cellInput.get("v.value")){            
+            component.set("v.errors", [{
+                message:"This field is required"
+            }]);         
+        }  
+    },   
+    checkType : function (cellInput, component, event) {
+        var column = component.get("v.column");
+        var value = cellInput.get("v.value");
+        
+        //Check Email
+        if (column.type == "Email") {
+            if (value && !value.match("^[a-zA-Z0-9\._-]+\@[a-zA-Z0-9\._-]+\.[a-zA-z0-9]{2,4}$")) {
+                component.set("v.errors", [{
+                    message: "Invalid email: " + value
+                }]);
             }
-        };                
-        var outputConfig = {
-            "String" : {
-                inputType : "ui:outputText",
-                inputParams : function(){
-                    return {
-                        "aura:id" : "outputTextCell",
-                        "value" : component.getReference("v.value")
-                    }
-                }
-            },
-            "TextArea" : {
-                inputType : "ui:outputText",
-                inputParams : function(){
-                    return {
-                        "aura:id" : "textAreaCell",
-                        "value" : component.getReference("v.value")
-                    }
-                }
-            },
-            "Boolean" :{
-                inputType : "ui:outputCheckbox",
-                inputParams : function(){
-                    return {
-                        "aura:id" : "outputCheckboxCell",
-                        "value" : component.getReference("v.value")
-                    }
-                }
-            },
-            "Currency":{
-                inputType : "ui:outputCurrency",
-                inputParams : function(){
-                    return {
-                        "aura:id": "outputCurrencyCell",
-                        "value" : component.getReference("v.value")
-                    }
-                }
-            },
-            "Date":{
-                inputType : "ui:outputDate",
-                inputParams : function(){
-                    return {
-                        "aura:id": "outputDateCell",
-                        "value" : component.getReference("v.value"),
-                        "format" : "dd/MM/yyyy",
-                        "displayDatePicker" : true
-                    }
-                }
-            },
-            "Datetime":{
-                inputType : "ui:outputDateTime",
-                inputParams : function(){
-                    return {
-                        "aura:id": "ui:outputDateTimeCell",
-                        "value" : component.getReference("v.value"),
-                        "format" : "dd/MM/yyyy hh:mm",
-                        "displayDatePicker" : true
-                    }
-                } 
-            },
-            "Double":{
-                inputType : "ui:outputNumber",
-                inputParams : function(){
-                    return {
-                        "aura:id" : "outputNumberCell",                    
-                        "value" : component.getReference("v.value")                    
-                    }
-                }  
-            },
-            "Email":{
-                inputType : "ui:outputEmail",
-                inputParams : function(){
-                    return {
-                        "aura:id": "outputEmailCell",
-                        "value" : component.getReference("v.value")
-                    }
-                }
-            },
-            "Integer":{
-                inputType : "ui:outputNumber",
-                inputParams : function(){
-                    return {
-                    	"aura:id": "outputIntegerCell",
-                    	"value" : component.getReference("v.value")                    
-                    }
-                }
-            },
-            "Percent":{
-                inputType : "ui:outputNumber",
-                inputParams : function() {
-                    return { 
-                        "aura:id" : "outputNumberCell",
-                        "value" : component.getReference("v.value")                    
-                    }
-                }
-            },
-            "PickList":{
-                inputType : "ui:outputText",
-                inputParams : function(){
-                    return {
-                        "aura:id": "pickListCell",
-                        "value" : component.getReference("v.value")
-                    }
-                } 
-            },
-            "Phone":{
-                inputType : "ui:outputPhone",
-                inputParams : function(){
-                    return {
-                        "aura:id": "outputPhoneCell",
-                        "value" : component.getReference("v.value")
-                    }
-                }
-            },
-            "Url":{
-                inputType : "ui:outputURL",
-                inputParams : function(){
-                    return {
-                        "aura:id": "urlCell",
-                        "value" : component.getReference("v.value"),
-                        "label" : component.getReference("v.value")
-                    }
-                } 
-            },
-            "Reference":{
-                inputType : "ui:outputURL",
-                inputParams : function(){
-                    return {
-                        "aura:id": "referenceCell",
-                        "value" : "/one/one.app#/sObject/" + item[column.name] + "/view",
-                        "label": item[column.name + '__Name']
-                    }
-                } 
-            },
-            "Formula":{
-                inputType : "ui:outputRichText",
-                inputParams : function(){
-                    return {
-                        "aura:id": "formulaCell",
-                        "value": component.getReference("v.value")
-                    }
-                } 
+        }
+        //Check Date
+        if (column.type == "Date") {
+            if (value && !moment(value, "dd/MM/yyyy").isValid()) {
+                component.set("v.errors", [{
+                    message: "Invalid date: " + value
+                }]);
             }
-        };
-        if(displayMode=="read"){
-            if(component.get("v.columnRank")==0){
-                $A.createComponent(
-                    "ui:outputURL",
-                    {
-                        "aura:id": "outputUrlCell",
-                        "label": component.getReference("v.value"),
-                        "value": "/one/one.app#/sObject/" + item.Id + "/view"
-                    },
-                    setCellComponent
-                ); 
+        }
+    },    
+    checkDigits : function (cellInput, component, event) {
+        var column = component.get("v.column");
+        var digits = component.get("v.digits");
+        var value = cellInput.get("v.value");
+        
+        //Check Integer field
+        if (column.type == "Integer") {
+            if (value && value.toString().length > digits) {
+                component.set("v.errors", [{
+                    message: "Input too long: >" + digits
+                }]);
             }
-            else{
-                $A.createComponent(
-                	outputConfig[column.type].inputType,
-                	outputConfig[column.type].inputParams(),
-                	setCellComponent
-            	);                                     
+        }        
+    },
+    checkPrecision : function (cellInput, component, event) {
+        var column = component.get("v.column");
+        var precision = component.get("v.precision");
+        var value = cellInput.get("v.value");
+        
+        //Check Double/Currency/Percent field
+        if (column.type == "Double" ||
+            column.type == "Currency" ||
+            column.type == "Percent") {
+            if (value && value.toString().length > precision) {
+                component.set("v.errors", [{
+                    message: "Input too long: >" + precision
+                }]);
             }
-        }else{
-            $A.createComponent(
-                inputConfig[column.type].inputType,
-                inputConfig[column.type].inputParams(),
-                setCellComponent
-            );    
-        }                  
-    }
+        }
+    }  
 })

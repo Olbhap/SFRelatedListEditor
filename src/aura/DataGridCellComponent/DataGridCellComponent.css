@@ -1,0 +1,7 @@
+.THIS .tooltip-toggle {
+    display: none !important;
+}
+
+.THIS .error-button svg {
+    fill: rgb(194, 57, 52);
+}

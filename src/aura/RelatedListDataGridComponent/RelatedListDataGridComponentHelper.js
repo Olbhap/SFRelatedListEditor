@@ -53,6 +53,17 @@
         component.set("v.items", []);                
         component.set("v.items", items);                
     },
+    checkItems : function(component){
+        var cellComponents = component.find("cell");        
+        for(var c=0; c < cellComponents.length; c++){
+            var cellCmp = cellComponents[c];
+            if (cellCmp.get("v.hasErrors")){
+                return false;
+            }
+        }                
+        
+        return true;
+    },
     updateItems : function(component){
         var cellComponents = component.find("cell");
         var items = component.get("v.items");
