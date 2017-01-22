@@ -2,6 +2,15 @@
     display: none !important;
 }
 
+.THIS .error-button {
+    left: 5px;
+}
+
 .THIS .error-button svg {
     fill: rgb(194, 57, 52);
+}
+
+.THIS .required-field {
+    position: absolute;
+    top: -3px;
 }

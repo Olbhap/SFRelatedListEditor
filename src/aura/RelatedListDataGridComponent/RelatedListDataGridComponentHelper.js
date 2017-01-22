@@ -73,7 +73,11 @@
             var cellCmp = cellComponents[c];
             var column = cellCmp.get("v.column");
             var item = items[cellCmp.get("v.itemRank")];
-            item[column.name] = cellCmp.get("v.value");           
+            item[column.name] = cellCmp.get("v.value");  
+            
+            if(column.type=='Reference'){
+                item[column.name + '__Name'] = cellCmp.get("v.refLabel");
+            }
         }                
         
         return items;

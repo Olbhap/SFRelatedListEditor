@@ -63,7 +63,7 @@
                                                          itemRank="{!itemRank}"
                                                          column="{!column}" 
                                                          columnRank="{!columnRank}"
-                                                         displayMode="{!v.displayMode}"/>
+                                                         displayMode="{!v.displayMode}"/>                                
                             </aura:iteration>
                         </tr>            
                     </aura:iteration>    	            

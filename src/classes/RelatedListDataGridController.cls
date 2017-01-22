@@ -33,8 +33,7 @@ public with sharing class RelatedListDataGridController {
         String relatedObjectName = (String)mRelatedListMetadata.get('sobject');
         
         Schema.SObjectType relatedObjType = Schema.getGlobalDescribe().get(relatedObjectName);
-        Schema.DescribeSObjectResult relatedObjDesc = relatedObjType.getDescribe();
-        
+        Schema.DescribeSObjectResult relatedObjDesc = relatedObjType.getDescribe();        
         
         for(Integer i=0; i<columns.size(); i++){
             Map<String, Object> mColumn = (Map<String, Object>) columns.get(i);
@@ -46,9 +45,10 @@ public with sharing class RelatedListDataGridController {
                 mColumn.put('name', columnKey);
             }
             //If it's a Reference field
-            if(columnKey.endsWith('.Name')){
+            if(columnKey.endsWith('.Name')){                
+                mColumn.put('refObjName', ((String)mColumn.get('field')).replace('.Name', ''));
                 columnKey = (String)mColumn.get('lookupId');
-                mColumn.put('name', columnKey);
+                mColumn.put('name', columnKey);                
             }
             
             Schema.SObjectField sfield = relatedObjDesc.fields.getMap().get(columnKey);           
@@ -154,8 +154,13 @@ public with sharing class RelatedListDataGridController {
                     if(mItem.containsKey(fieldKey)){
                         Id lookupId = (Id)mItem.get(fieldKey);
                         if(lookupId != null){
-                            SObject lookupObj = getLookupObject(lookupId);
-                            mItem.put(fieldKey + '__Name', lookupObj.get('Name'));                                                        
+                            try{
+                            	SObject lookupObj = getLookupObject(lookupId);
+                            	mItem.put(fieldKey + '__Name', lookupObj.get('Name'));                                                                                        
+                            }
+                            catch(Exception e){
+                                mItem.put(fieldKey + '__Name', 'Undefined'); 
+                            }
                         }                        
                     }
                 }                
@@ -203,12 +208,16 @@ public with sharing class RelatedListDataGridController {
                 Schema.SObjectField sfield = objType.getDescribe().fields.getMap().get(field);
                 if(sfield != null && sfield.getDescribe().isUpdateable()){
                     if(sfield.getDescribe().getType() == Schema.DisplayType.DATE){
-                        String dateStr = ((String)mObj.get(field)) + ' 00:00:00';
-                        sObj.put(field, Date.valueOf(dateStr));                    
+                        if(mObj.get(field) != null){
+                            String dateStr = ((String)mObj.get(field)) + ' 00:00:00';
+                            sObj.put(field, Date.valueOf(dateStr));                                                
+                        }
                     }
                     else if(sfield.getDescribe().getType() == Schema.DisplayType.DATETIME){
-                        String datetimeStr = ((String)mObj.get(field)).replace('T', ' ').replace('000Z', '');
-                        sObj.put(field, Datetime.valueOf(datetimeStr));                    
+                        if(mObj.get(field) != null){
+                            String datetimeStr = ((String)mObj.get(field)).replace('T', ' ').replace('000Z', '');
+                            sObj.put(field, Datetime.valueOf(datetimeStr));                    
+                        }
                     }
                     else{                        
                         sObj.put(field, mObj.get(field));                    
@@ -221,5 +230,16 @@ public with sharing class RelatedListDataGridController {
         
         update sObjectsItems;
         return true;
-    }
+    } 
+    
+    /**
+     * Search Candiate for Lookup Field
+     * */
+    @AuraEnabled
+	public static Object[] getLookupCandidates(String refObjName, String searchTerm) {
+        String soqlQuery = 'Select Id,Name From '+ refObjName+ 
+            ' Where Name Like \'%' + searchTerm + '%\''+' Limit 5';
+        
+        return Database.query(soqlQuery);
+	}
 }
