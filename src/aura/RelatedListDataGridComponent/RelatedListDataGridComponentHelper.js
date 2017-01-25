@@ -1,9 +1,9 @@
 ({
-	applyShadowEffect : function(component, event) {
+    applyShadowEffect : function(component, event) {
         //Apply the shadow effect on the grid
         var gridContainer = component.find("gridContainer");
         $A.util.toggleClass(gridContainer, "shadow-effect");
-	},
+    },
     toogleEditButton : function(component, event){
         //Show/hide the edit button
         var editButton = component.find("editButton");
@@ -35,7 +35,7 @@
         dataAction.setCallback(this, function(res) {                        
             if (res.getState() === "SUCCESS") {                 
                 var gridContainer = component.find("gridContainer");
-        		$A.util.toggleClass(gridContainer, "hidden");        
+                $A.util.toggleClass(gridContainer, "hidden");        
                 component.set("v.items", res.getReturnValue()); 
             }
             else if (res.getState() === "ERROR") {
@@ -49,12 +49,21 @@
         //Set the display mode
         component.set("v.displayMode", displayMode); 
         
-        //Refresh the items
-        component.set("v.items", []);                
-        component.set("v.items", items);                
+        //Refresh the items        
+        component.set("v.items", JSON.parse(JSON.stringify(items)));                
+    },
+    getCellComponents : function(component){
+        var cellComponents = [];
+        component.find("row").forEach(function(row){
+            row.get("v.body").forEach(function(cell){
+                cellComponents.push(cell);
+            })
+        });
+        
+        return cellComponents;
     },
     checkItems : function(component){
-        var cellComponents = component.find("cell");        
+        var cellComponents = this.getCellComponents(component);        
         for(var c=0; c < cellComponents.length; c++){
             var cellCmp = cellComponents[c];
             if (cellCmp.get("v.hasErrors")){
@@ -64,21 +73,21 @@
         
         return true;
     },
-    updateItems : function(component){
-        var cellComponents = component.find("cell");
+    updateItems : function(component){        
         var items = component.get("v.items");
+        var cellComponents = this.getCellComponents(component);
         
         //Update the items from cells
-        for(var c=0; c < cellComponents.length; c++){
-            var cellCmp = cellComponents[c];
+        cellComponents.forEach(function(cellCmp){
             var column = cellCmp.get("v.column");
             var item = items[cellCmp.get("v.itemRank")];
+            
             item[column.name] = cellCmp.get("v.value");  
             
             if(column.type=='Reference'){
                 item[column.name + '__Name'] = cellCmp.get("v.refLabel");
             }
-        }                
+        });
         
         return items;
     },

@@ -54,18 +54,11 @@
                     <aura:iteration items="{!v.items}" 
                                     var="item" 
                                     indexVar="itemRank">                  
-                        <tr>
-                            <aura:iteration items="{!v.columns}" 
-                                            var="column" 
-                                            indexVar="columnRank">                          
-                                <c:DataGridCellComponent aura:id="cell"
-                                                         item="{!item}" 
-                                                         itemRank="{!itemRank}"
-                                                         column="{!column}" 
-                                                         columnRank="{!columnRank}"
-                                                         displayMode="{!v.displayMode}"/>                                
-                            </aura:iteration>
-                        </tr>            
+                        <c:DataGridRowComponent aura:id="row"
+                                                 displayMode="{!v.displayMode}"
+                                                 columns="{!v.columns}"                                                 
+                                                 item="{!item}" 
+                                                 itemRank="{!itemRank}"/>                                
                     </aura:iteration>    	            
                 </tbody>
             </table>
