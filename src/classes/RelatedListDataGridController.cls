@@ -133,8 +133,7 @@ public with sharing class RelatedListDataGridController {
     {            
         Object[] items = RestAPIUtils.getRelatedListItems(objectId, 
                                                               relatedlistName);
-        if(items.size()>0){
-        
+        if(items.size()>0){        
             Id firstChildId = (Id)((Map<String, Object>) items.get(0)).get('Id');            
         	DescribeSObjectResult objectDescResult = firstChildId.getSobjectType().getDescribe();
             
@@ -145,26 +144,44 @@ public with sharing class RelatedListDataGridController {
                     lookupFields.put(fieldDescResult.getName(), fieldDescResult);
                 }                                
             }   
-
-            for(Object item : items){
-                Map<String, Object> mItem = (Map<String, Object>) item;
+			
+            //Set the lookup labels based on the field type
+            for(String fieldKey : lookupFields.keySet()){
+                Set<Id> lookupIds = new Set<Id>();
+                Map<Id, List<Object>> lookupMap = new Map<Id, List<Object>>();                
                 
-                //Set the lookup labels based on the field type
-                for(String fieldKey : lookupFields.keySet()){
+                //Build the list of IDs
+                for(Object item : items){
+                    Map<String, Object> mItem = (Map<String, Object>) item;
                     if(mItem.containsKey(fieldKey)){
                         Id lookupId = (Id)mItem.get(fieldKey);
                         if(lookupId != null){
-                            try{
-                            	SObject lookupObj = getLookupObject(lookupId);
-                            	mItem.put(fieldKey + '__Name', lookupObj.get('Name'));                                                                                        
+                            lookupIds.add(lookupId); 
+                            if(!lookupMap.containsKey(lookupId)){
+                                lookupMap.put(lookupId, new List<Object>());
                             }
-                            catch(Exception e){
-                                mItem.put(fieldKey + '__Name', 'Undefined'); 
-                            }
+                            lookupMap.get(lookupId).add(mItem);
                         }                        
                     }
-                }                
-            }
+                }
+                               
+                //Do SOQL query based on the ID list
+                if(!lookupIds.isEmpty()){
+                    SObject[] lookupObjs = getLookupObjects(lookupIds);                 
+                    for(SObject lookupObj : lookupObjs){
+                        for(Object item : lookupMap.get(lookupObj.Id)){
+                            Map<String, Object> mItem = (Map<String, Object>) item;
+                            try{                            	
+                                mItem.put(fieldKey + '__Name', lookupObj.get('Name'));                                                                                        
+                            }
+                            catch(Exception e){
+                                System.debug(e.getMessage());
+                                mItem.put(fieldKey + '__Name', 'Undefined'); 
+                            }
+                        }
+                    }
+                }
+            }                            
             
             return items;                    
         }
@@ -173,16 +190,16 @@ public with sharing class RelatedListDataGridController {
     } 
     
     /**
-     * Return the object based on the lookup id
+     * Return the list of objects based on the lookup ids
      * */
-    private static SObject getLookupObject(Id lookupId)
+    private static SObject[] getLookupObjects(Set<Id> lookupIds)
     {
-        Schema.SObjectType sobjectType = lookupId.getSObjectType();
-		String sobjectName = sobjectType.getDescribe().getName();
+        Schema.SObjectType sobjectType = (new list<Id>(lookupIds))[0].getSObjectType();
+        String sobjectName = sobjectType.getDescribe().getName();
         
-		return Database.query('Select Id, Name From ' + 
+        return Database.query('Select Id, Name From ' + 
                               sobjectName + 
-                              ' Where Id = :lookupId');
+                              ' Where Id in :lookupIds');                   
     }
     
     /**

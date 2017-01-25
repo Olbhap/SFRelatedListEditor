@@ -31,7 +31,7 @@ public class RelatedListDataGridControllerTest {
         
         Object[] contacts = RelatedListDataGridController.getReleatedListItems('0010Y000003iFovQAE', 
                                                                                'Contacts');        
-		System.assertEquals(1, contacts.size());                
+		System.assertEquals(1, contacts.size());         
         
         Test.stopTest();
     } 

@@ -14,9 +14,26 @@
 		<name>ApexPage</name>
 	</types>
 	<types>
-		<members>DataGridCellComponent</members>
-		<members>RelatedListDataGridComponent</members>
 		<members>RelatedListDataGridsComponent</members>
+		<members>RelatedListDataGridComponent</members>		
+		<members>DataGridRowComponent</members>
+		<members>DataGridCellComponent</members>
+		<members>DataGridBooleanCellComponent</members>
+		<members>DataGridCurrencyCellComponent</members>
+		<members>DataGridDateCellComponent</members>
+		<members>DataGridDatetimeCellComponent</members>
+		<members>DataGridDoubleCellComponent</members>
+		<members>DataGridEmailCellComponent</members>
+		<members>DataGridFormulaCellComponent</members>
+		<members>DataGridIntegerCellComponent</members>
+		<members>DataGridItemLinkCellComponent</members>
+		<members>DataGridPercentCellComponent</members>
+		<members>DataGridPhoneCellComponent</members>
+		<members>DataGridPickListCellComponent</members>
+		<members>DataGridReferenceCellComponent</members>		
+		<members>DataGridStringCellComponent</members>
+		<members>DataGridTextAreaCellComponent</members>
+		<members>DataGridUrlCellComponent</members>
 		<name>AuraDefinitionBundle</name>
 	</types>
 	<types>

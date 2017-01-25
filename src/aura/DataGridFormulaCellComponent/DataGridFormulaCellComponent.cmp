@@ -1,0 +1,3 @@
+<aura:component extends="c:DataGridCellComponent">
+    <ui:outputRichText aura:id="outputCell" value="{!v.value}"/> 
+</aura:component>

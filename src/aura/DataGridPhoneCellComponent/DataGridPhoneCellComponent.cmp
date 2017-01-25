@@ -1,0 +1,8 @@
+<aura:component extends="c:DataGridCellComponent">
+    <aura:if isTrue="{!v.displayMode == 'read'}">
+        <ui:outputPhone aura:id="outputCell" value="{!v.value}"/>
+        <aura:set attribute="else">
+            <ui:inputPhone aura:id="inputCell" value="{!v.value}" maxlength="{!v.length}" change="{!c.checkInput}"/>
+        </aura:set>
+    </aura:if>
+</aura:component>

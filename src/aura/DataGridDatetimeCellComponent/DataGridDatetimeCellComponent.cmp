@@ -1,0 +1,8 @@
+<aura:component extends="c:DataGridCellComponent">
+    <aura:if isTrue="{!v.displayMode == 'read'}">
+        <ui:outputDateTime aura:id="outputCell" value="{!v.value}" format="dd/MM/yyyy hh:mm"/>        	
+        <aura:set attribute="else">
+            <ui:inputDateTime aura:id="inputCell" value="{!v.value}" format="dd/MM/yyyy hh:mm" displayDatePicker="true" change="{!c.checkInput}"/>        	
+        </aura:set>
+    </aura:if>
+</aura:component>

@@ -1,0 +1,8 @@
+<aura:component extends="c:DataGridCellComponent">
+	<aura:if isTrue="{!v.displayMode == 'read'}">
+        <ui:outputCheckbox aura:id="outputCell" value="{!v.value}"/>
+        <aura:set attribute="else">
+            <ui:inputCheckbox aura:id="inputCell" value="{!v.value}"/>
+        </aura:set>
+    </aura:if>
+</aura:component>

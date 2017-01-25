@@ -1,0 +1,8 @@
+<aura:component extends="c:DataGridCellComponent">
+    <aura:attribute name="refValue" type="String"/>
+    <aura:attribute name="refLabel" type="String"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+    
+    <ui:outputURL aura:id="outputCell" value="{!v.refValue}" label="{!v.refLabel}"/> 
+</aura:component>
