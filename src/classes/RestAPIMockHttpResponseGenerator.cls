@@ -1,4 +1,3 @@
-@isTest
 global class RestAPIMockHttpResponseGenerator  implements HttpCalloutMock {    
     global HTTPResponse respond(HTTPRequest req) {        
         StaticResourceCalloutMock mock = new StaticResourceCalloutMock();        

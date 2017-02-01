@@ -25,8 +25,9 @@ public class RestAPIUtilsTest {
         Test.startTest();
         Test.setMock(HttpCalloutMock.class, new RestAPIMockHttpResponseGenerator());        
         
-        RestAPIUtils.callQueryAPI('Test');
-        
+        String result = RestAPIUtils.callQueryAPI('Test');
+        System.assertEquals(true, result != null);
+             
         Test.stopTest();
     }
 }
